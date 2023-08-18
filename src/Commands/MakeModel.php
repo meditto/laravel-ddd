@@ -50,21 +50,6 @@ class MakeModel extends DomainGeneratorCommand
 
     public function handle()
     {
-        $baseModel = config('ddd.base_model');
-
-        $parts = str($baseModel)->explode('\\');
-        $baseModelName = $parts->last();
-        $baseModelPath = $this->getPath($baseModel);
-
-        if (! file_exists($baseModelPath)) {
-            $this->warn("Base model {$baseModel} doesn't exist, generating...");
-
-            $this->call(MakeBaseModel::class, [
-                'domain' => 'Shared',
-                'name' => $baseModelName,
-            ]);
-        }
-
         parent::handle();
 
         if ($this->option('factory')) {

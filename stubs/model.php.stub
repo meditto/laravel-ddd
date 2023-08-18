@@ -4,10 +4,11 @@ namespace {{ namespace }};
 
 use {{ rootNamespace }}\Shared\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lunarstorm\LaravelDDD\Traits\HasDDDFactory;
 
-class {{ class }} extends BaseModel
+class {{ class }} extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, use HasDDDFactory;
 
     protected $casts = [];
 }

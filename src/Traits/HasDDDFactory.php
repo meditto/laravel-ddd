@@ -1,0 +1,48 @@
+<?php
+
+namespace Lunarstorm\LaravelDDD\Traits;
+
+
+use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+trait HasDDDFactory
+{
+    use HasFactory;
+
+    /**
+     * @throws Exception
+     */
+    protected static function newFactory()
+    {
+        $parts = str(get_called_class())->explode('\\');
+
+        // Find the index of the "Models" directory
+        $modelsIndex = $parts->search("Models");
+
+        if ($modelsIndex === false) {
+            throw new Exception("Model class must be in a Models directory: {$parts->implode('\\')}");
+        }
+
+        // Extract domain and subdomain from before "Models"
+        /** @var int $modelsIndex */
+        $subdomain = $modelsIndex >= 3 ? $parts->get($modelsIndex - 1) : '';
+        $domain = $subdomain ? $parts->get($modelsIndex - 2) : $parts->get($modelsIndex - 1);
+
+        // Extract model name from after "Models"
+        $model = $parts->get($modelsIndex + 1);
+
+        // Build factory path
+        $factoryPath = "Database\\Factories\\{$domain}";
+        if ($subdomain) {
+            $factoryPath .= "\\{$subdomain}";
+        }
+        $factoryPath .= "\\{$model}Factory";
+
+        if (class_exists($factoryPath)) {
+            return app($factoryPath);
+        } else {
+            throw new Exception("Factory class does not exist: {$factoryPath}");
+        }
+    }
+}
